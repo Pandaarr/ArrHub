@@ -7,6 +7,54 @@ Stack utilisé sur un Synology DS918+, DSM 7.1.1-42962 Update 6 mais cela devrai
 <br>
 <b>Toutes les app sensibles passent à travers un client VPN, donc avoir un compte chez un fournisseur VPN, de préférence avec redirection de port (Proton VPN ou autre) est requis pour utiliser tout cela.</b>
 
+## Architecture des dossiers requise
+
+Pour que les **hardlinks** fonctionnent correctement avec Radarr et Sonarr, le dossier contenant les téléchargements doit impérativement être situé sur le **même volume** que les bibliothèques de médias.
+
+Un hardlink est simplement une seconde référence vers un même fichier sur le disque. Lors de l'import d'un film ou d'une série, Radarr/Sonarr créent alors un lien vers le fichier téléchargé au lieu de le copier.
+
+### Avantages
+
+- Conservation du seeding dans qBittorrent
+- Aucune duplication des données
+- Import quasi instantané
+- Économie d'espace disque
+- Réduction des écritures sur les disques
+
+### Exemple d'arborescence
+
+```text
+/volume1
+│
+├── docker
+│   ├── gluetun
+│   ├── qbittorrent
+│   ├── radarr
+│   ├── sonarr
+│   ├── prowlarr
+│   └── ...
+│
+└── media
+    ├── Films
+    ├── Series
+    └── Torrents
+        ├── InProgress
+        ├── Movies
+        ├── TV Shows
+        ├── Music
+        ├── Books
+        └── _torrent-files
+```
+
+⚠️ Si les dossiers `Torrents`, `Films` et `Series` sont situés sur des volumes différents, les hardlinks seront impossibles et Radarr/Sonarr effectueront une copie complète des fichiers.
+
+⚠️ Pour maximiser les chances de fonctionnement des hardlinks sous Docker, il est recommandé de monter le dossier parent commun (`/volume1/media`) dans les conteneurs plutôt que de monter séparément les dossiers `Films`, `Series` et `Torrents`.
+
+Exemple de montage recommandé dans Radarr, Sonarr et qBittorrent :
+
+Host : `/volume1/media`
+Container : `/media`
+
 <h2>Guide</h2>
 
 <ol>
@@ -19,6 +67,7 @@ Stack utilisé sur un Synology DS918+, DSM 7.1.1-42962 Update 6 mais cela devrai
     flaresolverr<br>
     <b>gluetun</b><br>
     jackett<br>
+	prowlarr<br>
     seerr<br>
     qbittorrent<br>
     radarr<br>
@@ -49,6 +98,10 @@ Stack utilisé sur un Synology DS918+, DSM 7.1.1-42962 Update 6 mais cela devrai
     Serveur proxy pour contourner la protection Cloudflare et DDoS-GUARD, à renseigner dans Jackett</li>
     <li><b><a href="https://github.com/Jackett/Jackett" target="_blank">Jackett</a></b> <i style="font-size: 12px;">(passe par gluetun)</i><br>
     Passerelle entre vos trackers torrent et Radarr, Sonarr...</li>
+	<li><b><a href="https://github.com/prowlarr/prowlarr" target="_blank">Prowlarr</a></b> <i style="font-size: 12px;">(passe par gluetun)</i><br>
+    Alternative à Jackett, Prowlarr est un gestionnaire d'indexeurs/proxy développé à partir de la pile de base populaire *arr .net/reactjs, conçu pour s'intégrer à vos différentes applications PVR. Il prend en charge la gestion aussi bien des trackers Torrent que des indexeurs Usenet. </li>
+	<li><b><a href="https://github.com/cross-seed/cross-seed" target="_blank">Cross-seed</a></b> <i style="font-size: 12px;">(passe par gluetun)</i><br>
+    Le « cross-seeding » consiste à télécharger un torrent à partir d'un tracker et à utiliser ces données pour partager des fichiers sur d'autres trackers. Cela permet de limiter au maximum les téléchargements tout en partageant instantanément des fichiers, ce qui en fait un excellent moyen d'améliorer son ratio et de contribuer à la communauté.</li>
     <li><b><a href="https://github.com/linuxserver/docker-qbittorrent" target="_blank">qBittorrent</a></b> <i style="font-size: 12px;">(passe par gluetun)</i><br>
     Client torrent de qualité</li>
     <li><b><a href="https://github.com/containrrr/watchtower/" target="_blank">Watchtower</a></b><br>

@@ -7,6 +7,24 @@ Stack utilisé sur un Synology DS918+, DSM 7.1.1-42962 Update 6 mais cela devrai
 <br>
 <b>Toutes les app sensibles passent à travers un client VPN, donc avoir un compte chez un fournisseur VPN, de préférence avec redirection de port (Proton VPN ou autre) est requis pour utiliser tout cela.</b>
 
+<h3>[Portainer](https://docs.portainer.io/start/install-ce)</h3>
+
+Bien qu'il soit tout à fait possible de gérer cette stack directement avec Docker Compose en ligne de commande, ce guide s'appuie sur **Portainer CE** afin de simplifier l'administration quotidienne.
+
+Portainer fournit une interface web permettant notamment de :
+
+- Déployer des stacks Docker à partir d'un fichier Compose
+- Démarrer, arrêter ou redémarrer des conteneurs
+- Consulter les logs des applications
+- Modifier facilement la configuration d'une stack
+- Accéder à un terminal dans les conteneurs
+- Gérer les volumes, réseaux et images Docker
+- Mettre à jour ou recréer des services sans utiliser le terminal
+
+L'utilisation de Portainer n'est pas obligatoire mais elle facilite grandement la maintenance de l'environnement, en particulier pour les utilisateurs peu familiers avec Docker en ligne de commande.
+
+Dans ce guide, toutes les opérations de déploiement et de gestion des conteneurs seront réalisées depuis l'interface web de Portainer.
+
 ## Architecture des dossiers requise
 
 Pour que les **hardlinks** fonctionnent correctement avec Radarr et Sonarr, le dossier contenant les téléchargements doit impérativement être situé sur le **même volume** que les bibliothèques de médias.
@@ -73,7 +91,7 @@ Container : `/media`
     radarr<br>
     sonarr<br>
     watchtower</li>
-    <li>Créer une stack sur Portainer du nom que vous voulez, avec le Web editor [<a href="https://docs.portainer.io/user/docker/stacks/add#option-1-web-editor" target="_blank">tuto</a>]</li>
+    <li>Ouvrir l'interface Portainer puis créer une nouvelle stack via **Stacks > Add Stack** en utilisant le Web Editor ([tuto](https://docs.portainer.io/user/docker/stacks/add#option-1-web-editor))</li>
     <li>Copier/coller le code docker-compose que j'ai rédigé ici pour installer l'ensemble des containers que j'ai sélectionné* : <a href="https://github.com/Pandaarr/docker-compose-advanced-media/blob/main/stack-portainer-ce" target="_blank">stack-portainer-ce</a>
     <li>Editer les 'XXXX' ainsi que les PUID, PGID et volumes pour que cela fonctionne avec votre systeme</li>
     PS : Pour connaitre le PUID et PGID d'un utilisateur que vous avez créé via l'interface de votre Synology : <a href="https://mariushosting.com/synology-how-to-find-uid-userid-and-gid-groupid/" target="_blank">tuto</a>

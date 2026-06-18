@@ -5,39 +5,40 @@
 version: "3"
 services:
   radarr:
-   # automatisation et gestion de telechargement de films : https://radarr.video/
+	# automatisation et gestion de telechargement de films : https://radarr.video/
+	# ne passe pas par le tunnel VPN, non accessible en dehors du réseau local, configurer un reverse proxy pour y accéder depuis l'extérieur (port 443 vers 7878 avec nom de source personnalisée)
     container_name: radarr
     image: linuxserver/radarr:latest
     restart: unless-stopped
     ports:
      - 7878:7878
     volumes:
-      - <\path to data>:/config
-      - <\path/to/movies>:/movies
-      - <\path/to/downloadclient-downloads>:/downloads
+      - /volume1/docker/radarr:/config
+      - /volume1/media:/media
     environment:
      - PUID=100
      - PGID=1000
      - TZ=Europe/Paris
 
   sonarr:
-   # automatisation et gestion de telechargement de series : https://sonarr.tv/
+	# automatisation et gestion de telechargement de series : https://sonarr.tv/
+	# ne passe pas par le tunnel VPN, non accessible en dehors du réseau local, configurer un reverse proxy pour y accéder depuis l'extérieur (port 443 vers 8989 avec nom de source personnalisée)
     container_name: sonarr
     image: linuxserver/sonarr:latest
     restart: unless-stopped
     ports:
      - 8989:8989
     volumes:
-      - <\path to data>:/config
-      - <\path/to/tv>:/tv
-      - <\path/to/downloadclient-downloads>:/downloads
+      - /volume1/docker/sonarr:/config
+      - /volume1/media:/media
     environment:
      - PUID=100
      - PGID=1000
      - TZ=Europe/Paris
 
   bazarr:
-   # automatisation et gestion de telechargement de sous-titres pour films et series : https://www.bazarr.media/
+	# automatisation et gestion de telechargement de sous-titres pour films et series : https://www.bazarr.media/
+	# ne passe pas par le tunnel VPN, non accessible en dehors du réseau local, configurer un reverse proxy pour y accéder depuis l'extérieur (port 443 vers 6767 avec nom de source personnalisée)
     container_name: bazarr
     image: ghcr.io/linuxserver/bazarr:latest
     environment:
@@ -45,15 +46,15 @@ services:
       - PGID=1000
       - TZ=Europe/Paris
     volumes:
-      - /srv/dev-disk-by-label-NAS/Config/Bazarr:/config
-      - /srv/dev-disk-by-label-NAS/Data/Movies:/movies
-      - /srv/dev-disk-by-label-NAS/Data/Series:/tv
+      - /volume1/docker/bazarr:/config
+      - /volume1/media:/media
     ports:
       - 6767:6767
     restart: unless-stopped
 
-  overseerr:
-   # outil de gestion des requetes (les votres et ceux des utilisateurs de votre Plex) et de découverte de medias concu pour fonctionner avec Plex, Radarr et Sonarr : https://overseerr.dev/
+  seerr:
+	# outil de gestion des requetes (les votres et ceux des utilisateurs de votre Plex) et de découverte de medias concu pour fonctionner avec Plex, Radarr et Sonarr : https://overseerr.dev/
+	# ne passe pas par le tunnel VPN, non accessible en dehors du réseau local, configurer un reverse proxy pour y accéder depuis l'extérieur (port 443 vers 5055 avec nom de source personnalisée)
     container_name: overseerr
     image: lscr.io/linuxserver/overseerr:latest
     environment:
@@ -61,13 +62,14 @@ services:
       - PGID=1000
       - TZ=Europe/Paris
     volumes:
-      - /path/to/appdata/config:/config
+      - /volume1/docker/seerr:/config
     ports:
       - 5055:5055
     restart: unless-stopped
 
   gluetun:
-   # client VPN pour plusieurs fournisseurs VPN, ecrit en Go et utilisant OpenVPN ou Wireguard, DNS sur TLS, avec quelques serveurs proxy integres : https://github.com/qdm12/gluetun#features
+	# client VPN pour plusieurs fournisseurs VPN, ecrit en Go et utilisant OpenVPN ou Wireguard, DNS sur TLS, avec quelques serveurs proxy integres : https://github.com/qdm12/gluetun#features
+	# exemple pour Proton VPN
     image: qmcgaw/gluetun:latest
     container_name: gluetun
     hostname: gluetun
@@ -79,116 +81,135 @@ services:
     devices:
       - /dev/net/tun:/dev/net/tun
     ports:
-      # liste des ports des containers devant passer par le client VPN
       - 8888:8888/tcp # HTTP proxy
       - 8388:8388/tcp # Shadowsocks
       - 8388:8388/udp # Shadowsocks
       - 8080:8080/tcp # qBittorrent Web UI
-      - 6881:6881/tcp # qBittorrent
-      - 6881:6881/udp # qBittorrent
       - 8191:8191/tcp # Flaresolverr Web UI
       - 9117:9117/tcp # Jackett Web UI
-      - 25500:25500/tcp # Soulseek Web UI
-      - 25501:25501/tcp # Soulseek Web UI https
-      - 50000:50000/tcp # Soulseek
+      - 9696:9696/tcp # Prowlarr
+      - 2468:2468/tcp # Cross-seed UI
     volumes:
       - /volume1/docker/gluetun:/gluetun
     environment:
       # See https://github.com/qdm12/gluetun/wiki
-      - VPN_SERVICE_PROVIDER=XXXX
-      - VPN_TYPE=openvpn
-      # OpenVPN:
-      - OPENVPN_USER=XXXX
-      - OPENVPN_PASSWORD=XXXX
+      - VPN_SERVICE_PROVIDER=protonvpn
+      - VPN_TYPE=wireguard
+      # Wireguard :
+      - BLOCK_MALICIOUS=off
+      - WIREGUARD_PRIVATE_KEY=XXXX
       - SERVER_COUNTRIES=France
+      #- SERVER_COUNTRIES=Netherlands
+      - PORT_FORWARD_ONLY=on
+      - VPN_PORT_FORWARDING=on
+      - VPN_PORT_FORWARDING_UP_COMMAND=/bin/sh -c 'wget -O- --retry-connrefused --post-data "json={\"listen_port\":{{PORT}}}" http://127.0.0.1:8080/api/v2/app/setPreferences 2>&1' # pour MAJ le port forward automatiquement sur qbittorrent
       # Timezone for accurate log times
       - TZ=Europe/Paris
-      - PUID=100
-      - PGID=1000
+      - FIREWALL_OUTBOUND_SUBNETS=192.168.0.0/24
+      - PUID=XXXX
+      - PGID=XXXX
     restart: always
       
   flaresolverr:
-   # serveur proxy pour contourner la protection Cloudflare et DDoS-GUARD, genre celle qu'il y a parfois sur YGG, a renseigner dans Jackett : https://github.com/FlareSolverr/FlareSolverr
-    # DockerHub mirror flaresolverr/flaresolverr:latest
+	# serveur proxy pour contourner la protection Cloudflare et DDoS-GUARD, genre celle qu'il y a parfois sur YGG, a renseigner dans Jackett : https://github.com/FlareSolverr/FlareSolverr
+    #DockerHub mirror flaresolverr/flaresolverr:latest
     #image: ghcr.io/flaresolverr/flaresolverr:latest
     #image: ghcr.io/flaresolverr/flaresolverr:pr-1282
-    image: 21hsmw/flaresolverr:nodriver # ce qui fonctionne chez moi depuis 2024
+    image: 21hsmw/flaresolverr:nodriver
     container_name: flaresolverr
+    depends_on:
+        - gluetun
     environment:
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - LOG_HTML=${LOG_HTML:-false}
       - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
       - TZ=Europe/Paris
+      - DRIVER=nodriver
     restart: always
     # la ligne ci-dessous signifie que ce container utilise la connection du client VPN Gluetun
     network_mode: "service:gluetun"
     
   jackett:
-   # passerelle entre vos trackers torrent (YGG par exemple) et Radarr, Sonarr... : https://github.com/Jackett/Jackett
+	# passerelle entre vos trackers torrent et Radarr, Sonarr... : https://github.com/Jackett/Jackett
     image: lscr.io/linuxserver/jackett:latest
     container_name: jackett
+    depends_on:
+        - gluetun
     environment:
-      - PUID=100
-      - PGID=1000
+      - PUID=XXXX
+      - PGID=XXXX
       - TZ=Europe/Paris
-      - AUTO_UPDATE=true #optional
+      - AUTO_UPDATE=true # optional
     volumes:
       - /volume1/docker/jackett/config:/config
-      - /volume1/docker/jackett/downloads:/Downloads
+      - /volume1/docker/jackett/downloads:/downloads
     labels:
-      com.centurylinklabs.watchtower.enable: "false" # pour eviter le conflit avec la MAJ auto interne au container et celle de Watchtower
+      com.centurylinklabs.watchtower.enable: "false"
     restart: always
     # la ligne ci-dessous signifie que ce container utilise la connection du client VPN Gluetun
     network_mode: "service:gluetun"
 
+  prowlarr:
+	# alternative à jackett : https://github.com/prowlarr/prowlarr
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    depends_on:
+        - gluetun
+    environment:
+      - PUID=XXXX
+      - PGID=XXXX
+      - TZ=Europe/Paris
+    volumes:
+      - /volume1/docker/prowlarr/data:/config
+    restart: always
+    # la ligne ci-dessous signifie que ce container utilise la connection du client VPN Gluetun
+    network_mode: "service:gluetun"
+
+  cross-seed:
+	# outil de partage de torrents/médias automatique sur plusieurs trackers : https://github.com/cross-seed/cross-seed
+    image: ghcr.io/cross-seed/cross-seed:latest
+    container_name: cross-seed
+    depends_on:
+        - gluetun
+        - qbittorrent
+    user: XXXX:XXXX # this must match your torrent client (cross-seed does not support using PGID and PUID)
+    environment: 
+      - TZ=Europe/Paris
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"
+    volumes:
+      - /volume1/docker/cross-seed:/config
+      - /volume1/media:/media
+    command: daemon --verbose
+    restart: always
+    network_mode: "service:gluetun"
+
   qbittorrent:
-   # client torrent : https://www.qbittorrent.org/
+	# client torrent de qualité : https://www.qbittorrent.org/
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
+    depends_on:
+        - gluetun
     environment:
-      - PUID=100
-      - PGID=1000
+      - PUID=XXXX
+      - PGID=XXXX
       - TZ=Europe/Paris
       - WEBUI_PORT=8080
     volumes:
       - /volume1/docker/qbittorrent/config:/config
-      - /volume1/Downloads:/Downloads
+      - /volume1/media:/media
     restart: always
-    # la ligne ci-dessous signifie que ce container utilise la connection du client VPN Gluetun
     network_mode: "service:gluetun"
-    
-  slskd:
-   # Aaaah, enfin Soulseek version serveur ! Pour moi, c'est meilleur reseau de partage de musique, on trouve tout (bon, je cherche quasi que du metal hein !)
-   # l'interface mobile est fonctionnelle, ideal pour ajouter des albums sur Plex quand on vous recommande un groupe entre deux bieres : https://github.com/slskd/slskd
-    image: slskd/slskd:latest
-    container_name: slskd
-    environment:
-      - PUID=100
-      - PGID=1000
-      - TZ=Europe/Paris
-      - SLSKD_HTTP_PORT=25500
-      - SLSKD_HTTPS_PORT=25501
-      - SLSKD_SHARED_DIR=/shares
-      - SLSKD_DOWNLOADS_DIR=/downloads
-      - SLSKD_SLSK_USERNAME=XXXX
-      - SLSKD_SLSK_PASSWORD=XXXX
-      - SLSKD_USERNAME=XXXX
-      - SLSKD_PASSWORD=XXXX
-      - SLSKD_SHARE_FILTER=SYNOINDEX_MEDIA_INFO;\.DS_Store;\.ini;Thumbs.db;\#recycle;.@recycle;.@tmp;.@SynoEAStream;\@eaDir
-    volumes:
-      - /volume1/docker/soulseek:/app
-      - /volume1/music/Soulseek:/downloads
-      - /volume1/music:/shares
-    restart: always
     # la ligne ci-dessous signifie que ce container utilise la connection du client VPN Gluetun
     network_mode: "service:gluetun"
 
   watchtower:
-   # MAJ automatique de toutes les images de vos containers ne contenant pas le label 'com.centurylinklabs.watchtower.enable: "false"'
+	# MAJ automatique de toutes les images de vos containers ne contenant pas le label 'com.centurylinklabs.watchtower.enable: "false"'
+   	# ne passe pas par le tunnel VPN
     container_name: watchtower
     image: containrrr/watchtower:amd64-latest
     restart: always
-    # pour lancer manuellement une MAJ, decommenter la ligne en-dessous et updater la stack ; il faudra re-updater la stack complete si Gluetun est MAJ afin que les containers passant par son network soient a nouveau fonctionnel
+    # pour lancer manuellement une MAJ, décommenter la ligne en-dessous et updater la stack ; il faudra re-updater la stack complete si Gluetun est MAJ afin que les containers passant par son network soient a nouveau fonctionnel
     #command: --run-once
     environment:
       - TZ=Europe/Paris

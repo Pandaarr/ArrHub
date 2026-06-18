@@ -7,7 +7,15 @@ Stack utilisé sur un Synology DS918+, DSM 7.1.1-42962 Update 6 mais cela devrai
 <br>
 <b>Toutes les app sensibles passent à travers un client VPN, donc avoir un compte chez un fournisseur VPN, de préférence avec redirection de port (Proton VPN ou autre) est requis pour utiliser tout cela.</b>
 
-<h3>[Portainer](https://docs.portainer.io/start/install-ce)</h3>
+### Prérequis
+
+- Un NAS ou serveur capable d'exécuter Docker
+- Docker (ou Container Manager sous DSM 7.2+)
+- Portainer CE
+- Un fournisseur VPN compatible OpenVPN ou WireGuard (Proton VPN, Mullvad, AirVPN, etc.)
+- Un compte Plex (ou équivalent)
+
+<h3><a href=https://docs.portainer.io/start/install-ce target=_blank>Pourquoi utiliser Portainer ?</a></h3>
 
 Bien qu'il soit tout à fait possible de gérer cette stack directement avec Docker Compose en ligne de commande, ce guide s'appuie sur **Portainer CE** afin de simplifier l'administration quotidienne.
 
@@ -68,10 +76,15 @@ Un hardlink est simplement une seconde référence vers un même fichier sur le 
 
 ⚠️ Pour maximiser les chances de fonctionnement des hardlinks sous Docker, il est recommandé de monter le dossier parent commun (`/volume1/media`) dans les conteneurs plutôt que de monter séparément les dossiers `Films`, `Series` et `Torrents`.
 
-Exemple de montage recommandé dans Radarr, Sonarr et qBittorrent :
+<br>
 
-Host : `/volume1/media`
-Container : `/media`
+> [!TIP]
+> **Exemple de montage recommandé dans Radarr, Sonarr et qBittorrent :**
+> - Host : `/volume1/media`
+> - Container : `/media`
+
+<br>
+
 
 <h2>Guide</h2>
 

@@ -5,7 +5,7 @@ Guide d'installation d'outils d'automatisation et de gestion de téléchargement
 
 Stack utilisé sur un Synology DS918+, DSM 7.1.1-42962 Update 6 mais cela devrait fonctionner avec n'importe quel serveur sur lequel on peut installer Docker.<br>
 <br>
-<b>Toutes les app sensibles passent à travers un client VPN, donc avoir un compte chez un fournisseur VPN (Cyberghost, NordVPN...) est requis pour utiliser tout cela.</b>
+<b>Toutes les app sensibles passent à travers un client VPN, donc avoir un compte chez un fournisseur VPN, de préférence avec redirection de port (Proton VPN ou autre) est requis pour utiliser tout cela.</b>
 
 <h2>Guide</h2>
 
@@ -15,13 +15,13 @@ Stack utilisé sur un Synology DS918+, DSM 7.1.1-42962 Update 6 mais cela devrai
     <li>Installer "portainer-ce" dans Docker [<a href="https://mariushosting.com/how-to-install-portainer-on-your-synology-nas/" target="_blank">tuto</a>]</li>
     <li>Créer les dossiers suivant* dans le dossier partagé "docker" :<br>
     bazarr<br>
+    cross-seed<br>
     flaresolverr<br>
-    gluetun<br>
+    <b>gluetun</b><br>
     jackett<br>
-    overseerr<br>
+    seerr<br>
     qbittorrent<br>
     radarr<br>
-    slskd<br>
     sonarr<br>
     watchtower</li>
     <li>Créer une stack sur Portainer du nom que vous voulez, avec le Web editor [<a href="https://docs.portainer.io/user/docker/stacks/add#option-1-web-editor" target="_blank">tuto</a>]</li>
@@ -41,7 +41,7 @@ Stack utilisé sur un Synology DS918+, DSM 7.1.1-42962 Update 6 mais cela devrai
     Automatisation et gestion de téléchargement de séries</li>
     <li><b><a href="https://www.bazarr.media/" target="_blank">Bazarr</a></b><br>
     Automatisation et gestion de téléchargement de sous-titres pour films et séries</li>
-    <li><b><a href="https://overseerr.dev/" target="_blank">Overseerr</a></b><br>
+    <li><b><a href="https://seerr.dev/" target="_blank">Seerr</a></b><br>
     Outil de gestion des requêtes (les vôtres et celles des utilisateurs de votre Plex) et de découverte de médias conçu pour fonctionner avec Plex, Radarr et Sonarr</li>
     <li><b><a href="https://github.com/qdm12/gluetun#features" target="_blank">Gluetun</a></b><br>
     Client VPN pour plusieurs fournisseurs VPN, écrit en Go et utilisant OpenVPN ou Wireguard, DNS sur TLS, avec quelques serveurs proxy intégrés</li>
@@ -51,9 +51,6 @@ Stack utilisé sur un Synology DS918+, DSM 7.1.1-42962 Update 6 mais cela devrai
     Passerelle entre vos trackers torrent et Radarr, Sonarr...</li>
     <li><b><a href="https://github.com/linuxserver/docker-qbittorrent" target="_blank">qBittorrent</a></b> <i style="font-size: 12px;">(passe par gluetun)</i><br>
     Client torrent de qualité</li>
-    <li><b><a href="https://github.com/slskd/slskd" target="_blank">Soulseek (slskd)</a></b> <i style="font-size: 12px;">(passe par gluetun)</i><br>
-    Aaaah, enfin Soulseek version serveur ! Pour moi, c'est le meilleur réseau de partage de musique, on trouve tout (bon, je cherche quasi que du metal hein !).<br>
-    L'interface mobile est fonctionnelle, idéale pour ajouter des albums sur Plex quand on vous recommande un groupe entre deux bières</li>
     <li><b><a href="https://github.com/containrrr/watchtower/" target="_blank">Watchtower</a></b><br>
     MAJ automatique de toutes les images de vos containers ne contenant pas le label 'com.centurylinklabs.watchtower.enable: "false"'</li>
 </ul>

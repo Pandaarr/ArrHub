@@ -1,6 +1,11 @@
-# Exemple de stack fonctionnant sur un Synology DS918+, DSM 7.1.1-42962 Update 6, via Portainer-ce (portainer/portainer-ce:latest) dans le paquet Docker (renomme Container Manager dans DSM 7.2)
-# Il faudra peut-etre adapter les images si vous utilisez un autre serveur/systeme
-# Suivre le guide avant de c/c : https://github.com/Pandaarr/docker-compose-advanced-media#guide
+# ArrHub - Stack Docker média complète pour Synology, Portainer et VPN
+# Testée sur Synology DS918+ (DSM 7.1.1-42962 Update 6)
+# Compatible avec la plupart des serveurs Docker moyennant quelques adaptations
+# Guide d'installation : https://github.com/Pandaarr/docker-compose-advanced-media#guide
+
+# IMPORTANT :
+# Monter /volume1/media dans TOUS les containers utilisant les médias afin de permettre à Radarr et Sonarr d'utiliser les hardlinks.
+# Ne pas monter séparément Films, Series et Torrents.
 
 version: "3"
 services:
@@ -16,8 +21,8 @@ services:
       - /volume1/docker/radarr:/config
       - /volume1/media:/media
     environment:
-     - PUID=100
-     - PGID=1000
+     - PUID=XXXX
+     - PGID=XXXX
      - TZ=Europe/Paris
 
   sonarr:
@@ -32,8 +37,8 @@ services:
       - /volume1/docker/sonarr:/config
       - /volume1/media:/media
     environment:
-     - PUID=100
-     - PGID=1000
+     - PUID=XXXX
+     - PGID=XXXX
      - TZ=Europe/Paris
 
   bazarr:
@@ -42,8 +47,8 @@ services:
     container_name: bazarr
     image: ghcr.io/linuxserver/bazarr:latest
     environment:
-      - PUID=100
-      - PGID=1000
+      - PUID=XXXX
+      - PGID=XXXX
       - TZ=Europe/Paris
     volumes:
       - /volume1/docker/bazarr:/config
@@ -55,7 +60,7 @@ services:
   seerr:
 	# outil de gestion des requetes (les votres et ceux des utilisateurs de votre Plex) et de découverte de medias concu pour fonctionner avec Plex, Radarr et Sonarr : https://overseerr.dev/
 	# ne passe pas par le tunnel VPN, non accessible en dehors du réseau local, configurer un reverse proxy pour y accéder depuis l'extérieur (port 443 vers 5055 avec nom de source personnalisée)
-    container_name: overseerr
+    container_name: seerr
     image: lscr.io/linuxserver/overseerr:latest
     environment:
       - PUID=100
@@ -184,6 +189,23 @@ services:
     restart: always
     network_mode: "service:gluetun"
 
+  cleanuparr:
+    # nettoyage automatique des torrents selon ratio, temps de seed ou état dans Radarr/Sonarr : https://github.com/Cleanuparr/Cleanuparr
+    # ne passe pas par le tunnel VPN, aucune exposition Internet nécessaire
+    container_name: cleanuparr
+    image: ghcr.io/cleanuparr/cleanuparr:latest
+    depends_on:
+      - qbittorrent
+      - radarr
+      - sonarr
+    environment:
+      - TZ=Europe/Paris
+      - PUID=XXXX
+      - PGID=XXXX
+    volumes:
+      - /volume1/docker/cleanuparr:/config
+    restart: unless-stopped
+
   qbittorrent:
 	# client torrent de qualité : https://www.qbittorrent.org/
     image: lscr.io/linuxserver/qbittorrent:latest
@@ -199,7 +221,6 @@ services:
       - /volume1/docker/qbittorrent/config:/config
       - /volume1/media:/media
     restart: always
-    network_mode: "service:gluetun"
     # la ligne ci-dessous signifie que ce container utilise la connection du client VPN Gluetun
     network_mode: "service:gluetun"
 
@@ -207,7 +228,7 @@ services:
 	# MAJ automatique de toutes les images de vos containers ne contenant pas le label 'com.centurylinklabs.watchtower.enable: "false"'
    	# ne passe pas par le tunnel VPN
     container_name: watchtower
-    image: containrrr/watchtower:amd64-latest
+    image: containrrr/watchtower:latest
     restart: always
     # pour lancer manuellement une MAJ, décommenter la ligne en-dessous et updater la stack ; il faudra re-updater la stack complete si Gluetun est MAJ afin que les containers passant par son network soient a nouveau fonctionnel
     #command: --run-once

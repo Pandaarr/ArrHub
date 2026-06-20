@@ -1,5 +1,5 @@
 # ArrHub
-Guide d'installation d'outils d'automatisation et de gestion de téléchargements touts médias, stable et safe, pour Plex/Jellyfin (ou autre).
+Guide d'installation d'outils d'automatisation et de gestion de téléchargements torrents touts médias, stable et safe, pour Plex/Jellyfin (ou autre).
 
 <h2>Caractéristiques</h2>
 

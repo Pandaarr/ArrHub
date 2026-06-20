@@ -141,3 +141,6 @@ Outil de maintenance pour l'écosystème *Arr permettant notamment de supprimer 
     <li><b><a href="https://github.com/containrrr/watchtower/" target="_blank">Watchtower</a></b><br>
     MAJ automatique de toutes les images de vos containers ne contenant pas le label 'com.centurylinklabs.watchtower.enable: "false"'</li>
 </ul>
+
+> [!TIP]
+> **Pour aller plus loin, les custom format Radarr/Sonarr :** Mini guide pour grab et MAJ ses médias dans la version la plus légère, à ajuster pour la qualité souhaitée, avec des formats personnalisés et un profil unique dans Radarr et dans Sonarr ⇢ https://github.com/Pandaarr/arr-custom-formats

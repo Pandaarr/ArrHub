@@ -94,11 +94,12 @@ Un hardlink est simplement une seconde référence vers un même fichier sur le 
     <li>Installer "portainer-ce" dans Docker [<a href="https://mariushosting.com/how-to-install-portainer-on-your-synology-nas/" target="_blank">tuto</a>]</li>
     <li>Créer les dossiers suivant* dans le dossier partagé "docker" :<br>
     bazarr<br>
+    cleanuparr<br>
     cross-seed<br>
     flaresolverr<br>
     <b>gluetun</b><br>
     jackett<br>
-	prowlarr<br>
+    prowlarr<br>
     seerr<br>
     qbittorrent<br>
     radarr<br>
@@ -133,6 +134,8 @@ Un hardlink est simplement une seconde référence vers un même fichier sur le 
     Alternative à Jackett, Prowlarr est un gestionnaire d'indexeurs/proxy développé à partir de la pile de base populaire *arr .net/reactjs, conçu pour s'intégrer à vos différentes applications PVR. Il prend en charge la gestion aussi bien des trackers Torrent que des indexeurs Usenet. </li>
 	<li><b><a href="https://github.com/cross-seed/cross-seed" target="_blank">Cross-seed</a></b> <i style="font-size: 12px;">(passe par gluetun)</i><br>
     Le « cross-seeding » consiste à télécharger un torrent à partir d'un tracker et à utiliser ces données pour partager des fichiers sur d'autres trackers. Cela permet de limiter au maximum les téléchargements tout en partageant instantanément des fichiers, ce qui en fait un excellent moyen d'améliorer son ratio et de contribuer à la communauté.</li>
+	<li><b><a href="https://github.com/Cleanuparr/Cleanuparr" target="_blank">Cleanuparr</a></b><br>
+Outil de maintenance pour l'écosystème *Arr permettant notamment de supprimer automatiquement les torrents ayant atteint certains critères (ratio, temps de seed, état dans Radarr/Sonarr, etc.), d'éviter l'accumulation de téléchargements inutiles et de conserver une bibliothèque propre. En gros, si vous supprimez un média dans Radarr/Sonarr, cela va créer un "orphelin" qui n'a pas de hardlink dans votre dossier de téléchargement torrent. Lors du scan de Cleanuparr, ce dernier sera déplacé dans un dossier "unlinked" dans Qbittorrent et sera supprimé physiquement et définitivement à partir du moment où le temps de seed minimum paramétré est atteint.</li>
     <li><b><a href="https://github.com/linuxserver/docker-qbittorrent" target="_blank">qBittorrent</a></b> <i style="font-size: 12px;">(passe par gluetun)</i><br>
     Client torrent de qualité</li>
     <li><b><a href="https://github.com/containrrr/watchtower/" target="_blank">Watchtower</a></b><br>

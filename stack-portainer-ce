@@ -1,5 +1,5 @@
 # ArrHub - Stack Docker média complète pour Synology, Portainer et VPN
-# Testée sur Synology DS918+ (DSM 7.1.1-42962 Update 6)
+# Testée sur Synology DS918+ (DSM 7.1.1-42962 Update 6), fonctionne actuellement sur DSM 7.3.2-86009 Update 3
 # Compatible avec la plupart des serveurs Docker moyennant quelques adaptations
 # Guide d'installation : https://github.com/Pandaarr/docker-compose-advanced-media#guide
 

@@ -1,4 +1,4 @@
-# Docker compose advanced media
+# ArrHub
 Guide d'installation d'outils d'automatisation et de gestion de téléchargements touts médias, stable et safe, pour Plex (ou autre).
 
 <h2>Caractéristiques</h2>

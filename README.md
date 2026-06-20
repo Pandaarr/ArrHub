@@ -105,7 +105,7 @@ Un hardlink est simplement une seconde référence vers un même fichier sur le 
     radarr<br>
     sonarr<br>
     watchtower</li>
-    <li>Ouvrir l'interface Portainer puis créer une nouvelle stack via `Stacks > Add Stack` en utilisant le Web Editor (<a href=https://docs.portainer.io/user/docker/stacks/add#option-1-web-editor target="_blank">tuto</a>))</li>
+    <li>Ouvrir l'interface Portainer puis créer une nouvelle stack via `Stacks > Add Stack` en utilisant le Web Editor [<a href=https://docs.portainer.io/user/docker/stacks/add#option-1-web-editor target="_blank">tuto</a>]</li>
     <li>Copier/coller le code docker-compose que j'ai rédigé ici pour installer l'ensemble des containers que j'ai sélectionné* : <a href="https://github.com/Pandaarr/docker-compose-advanced-media/blob/main/stack-portainer-ce" target="_blank">stack-portainer-ce</a>
     <li>Editer les 'XXXX' ainsi que les PUID, PGID et volumes pour que cela fonctionne avec votre systeme</li>
     PS : Pour connaitre le PUID et PGID d'un utilisateur que vous avez créé via l'interface de votre Synology : <a href="https://mariushosting.com/synology-how-to-find-uid-userid-and-gid-groupid/" target="_blank">tuto</a>

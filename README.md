@@ -12,7 +12,7 @@ Stack utilisé sur un Synology DS918+, DSM 7.1.1-42962 Update 6 mais cela devrai
 - Un NAS ou serveur capable d'exécuter Docker
 - Docker (ou Container Manager sous DSM 7.2+)
 - Portainer CE
-- Un fournisseur VPN compatible OpenVPN ou WireGuard (Proton VPN, Mullvad, AirVPN, etc.)
+- Un fournisseur VPN compatible OpenVPN ou WireGuard avec redirection de port (Proton VPN, Mullvad, AirVPN, etc.)
 - Un compte Plex (ou équivalent)
 
 <h3><a href="https://docs.portainer.io/start/install-ce" target="_blank">Pourquoi utiliser Portainer ?</a></h3>

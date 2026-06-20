@@ -61,10 +61,10 @@ services:
 	# outil de gestion des requetes (les votres et ceux des utilisateurs de votre Plex) et de découverte de medias concu pour fonctionner avec Plex, Radarr et Sonarr : https://overseerr.dev/
 	# ne passe pas par le tunnel VPN, non accessible en dehors du réseau local, configurer un reverse proxy pour y accéder depuis l'extérieur (port 443 vers 5055 avec nom de source personnalisée)
     container_name: seerr
-    image: lscr.io/linuxserver/overseerr:latest
+    image: ghcr.io/seerr-team/seerr:latest
     environment:
-      - PUID=100
-      - PGID=1000
+      - PUID=XXXX
+      - PGID=XXXX
       - TZ=Europe/Paris
     volumes:
       - /volume1/docker/seerr:/config
